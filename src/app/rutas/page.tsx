@@ -1,9 +1,47 @@
+'use client';
+
+import { useState } from 'react';
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { RouteCard } from "@/components/routes/RouteCard";
-import { routes } from "@/lib/data";
+import { FilterBar } from "@/components/routes/FilterBar";
+import { routes as initialRoutes } from "@/lib/data";
 
 export default function RoutesPage() {
+    const [filteredRoutes, setFilteredRoutes] = useState(initialRoutes);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [filters, setFilters] = useState<{ difficulty?: string }>({});
+
+    const applyFilters = (query: string, currentFilters: { difficulty?: string }) => {
+        let result = initialRoutes;
+
+        if (query) {
+            const lowerQuery = query.toLowerCase();
+            result = result.filter(r =>
+                r.title.toLowerCase().includes(lowerQuery) ||
+                r.description.toLowerCase().includes(lowerQuery) ||
+                r.tags.some(t => t.toLowerCase().includes(lowerQuery))
+            );
+        }
+
+        if (currentFilters.difficulty) {
+            result = result.filter(r => r.difficulty === currentFilters.difficulty);
+        }
+
+        setFilteredRoutes(result);
+    };
+
+    const handleSearch = (query: string) => {
+        setSearchQuery(query);
+        applyFilters(query, filters);
+    };
+
+    const handleFilterChange = (newFilters: { difficulty?: string }) => {
+        const updatedFilters = { ...filters, ...newFilters };
+        setFilters(updatedFilters);
+        applyFilters(searchQuery, updatedFilters);
+    };
+
     return (
         <div className="min-h-screen flex flex-col">
             <Navbar />
@@ -16,16 +54,19 @@ export default function RoutesPage() {
                     </p>
                 </div>
 
-                {/* Placeholder for FilterBar */}
-                <div className="mb-8 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                    <p className="text-sm text-gray-500 text-center">Barra de Filtros (Próximamente)</p>
-                </div>
+                <FilterBar onSearch={handleSearch} onFilterChange={handleFilterChange} />
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {routes.map((route) => (
-                        <RouteCard key={route.id} route={route} />
-                    ))}
-                </div>
+                {filteredRoutes.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {filteredRoutes.map((route) => (
+                            <RouteCard key={route.id} route={route} />
+                        ))}
+                    </div>
+                ) : (
+                    <div className="text-center py-12">
+                        <p className="text-gray-500">No se encontraron rutas que coincidan con tu búsqueda.</p>
+                    </div>
+                )}
             </main>
 
             <Footer />

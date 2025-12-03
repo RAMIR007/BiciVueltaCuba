@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/Button";
+import { Map } from "@/components/ui/Map";
+import { Gallery } from "@/components/ui/Gallery";
 import { routes } from "@/lib/data";
 
 interface PageProps {
@@ -15,6 +17,11 @@ export default async function RouteDetailPage({ params }: PageProps) {
     if (!route) {
         notFound();
     }
+
+    // Mock coordinates for the map (centered on Havana for now)
+    // In a real app, these would come from the route data
+    const mapCenter: [number, number] = [23.1136, -82.3666];
+    const mapMarkers = [{ position: mapCenter, title: route.title }];
 
     return (
         <div className="min-h-screen flex flex-col">
@@ -54,7 +61,7 @@ export default async function RouteDetailPage({ params }: PageProps) {
 
                 <div className="container mx-auto px-4 py-12 grid grid-cols-1 lg:grid-cols-3 gap-12">
                     {/* Main Content */}
-                    <div className="lg:col-span-2 space-y-8">
+                    <div className="lg:col-span-2 space-y-12">
                         <section>
                             <h2 className="text-2xl font-bold text-gray-900 mb-4">Descripción</h2>
                             <p className="text-gray-700 leading-relaxed text-lg">
@@ -64,19 +71,13 @@ export default async function RouteDetailPage({ params }: PageProps) {
 
                         <section>
                             <h2 className="text-2xl font-bold text-gray-900 mb-4">Galería</h2>
-                            <div className="grid grid-cols-2 gap-4">
-                                {route.images.map((img, idx) => (
-                                    <div key={idx} className="aspect-video bg-gray-200 rounded-lg flex items-center justify-center text-gray-500">
-                                        Imagen {idx + 1}
-                                    </div>
-                                ))}
-                            </div>
+                            <Gallery images={route.images} title={`Galería de ${route.title}`} />
                         </section>
 
                         <section>
                             <h2 className="text-2xl font-bold text-gray-900 mb-4">Mapa</h2>
-                            <div className="aspect-video bg-gray-100 rounded-lg border border-gray-200 flex items-center justify-center text-gray-500">
-                                Mapa Interactivo (Próximamente)
+                            <div className="aspect-video bg-gray-100 rounded-lg border border-gray-200 overflow-hidden shadow-sm">
+                                <Map center={mapCenter} markers={mapMarkers as any} />
                             </div>
                         </section>
                     </div>
