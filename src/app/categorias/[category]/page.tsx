@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { Metadata } from "next";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { RouteCard } from "@/components/routes/RouteCard";
@@ -6,6 +7,22 @@ import { categories, routes } from "@/lib/data";
 
 interface PageProps {
     params: Promise<{ category: string }>;
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+    const { category: categorySlug } = await params;
+    const categoryData = categories.find((c) => c.slug === categorySlug);
+
+    if (!categoryData) {
+        return {
+            title: "Categoría no encontrada | BiciVueltaCuba",
+        };
+    }
+
+    return {
+        title: `Turismo ${categoryData.name} en Cuba | BiciVueltaCuba`,
+        description: categoryData.description,
+    };
 }
 
 export default async function CategoryPage({ params }: PageProps) {

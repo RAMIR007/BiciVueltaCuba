@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { Metadata } from "next";
 import Link from "next/link";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -7,6 +8,22 @@ import { provinces, routes } from "@/lib/data";
 
 interface PageProps {
     params: Promise<{ province: string }>;
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+    const { province: provinceSlug } = await params;
+    const provinceData = provinces.find((p) => p.slug === provinceSlug);
+
+    if (!provinceData) {
+        return {
+            title: "Provincia no encontrada | BiciVueltaCuba",
+        };
+    }
+
+    return {
+        title: `Ciclismo en ${provinceData.name} | BiciVueltaCuba`,
+        description: `Descubre las mejores rutas de ciclismo y turismo en ${provinceData.name}. ${provinceData.description}`,
+    };
 }
 
 export default async function ProvincePage({ params }: PageProps) {

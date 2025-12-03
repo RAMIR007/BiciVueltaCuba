@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { Metadata } from "next";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { RouteCard } from "@/components/routes/RouteCard";
@@ -6,6 +7,24 @@ import { provinces, routes } from "@/lib/data";
 
 interface PageProps {
     params: Promise<{ province: string; municipality: string }>;
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+    const { province: provinceSlug, municipality: municipalitySlug } = await params;
+
+    const provinceData = provinces.find((p) => p.slug === provinceSlug);
+    const municipalityData = provinceData?.municipalities.find(m => m.slug === municipalitySlug);
+
+    if (!municipalityData || !provinceData) {
+        return {
+            title: "Municipio no encontrado | BiciVueltaCuba",
+        };
+    }
+
+    return {
+        title: `Rutas en ${municipalityData.name}, ${provinceData.name} | BiciVueltaCuba`,
+        description: `Explora ${municipalityData.name} en bicicleta. ${municipalityData.description}`,
+    };
 }
 
 export default async function MunicipalityPage({ params }: PageProps) {

@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { Metadata } from "next";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/Button";
@@ -8,6 +9,27 @@ import { routes } from "@/lib/data";
 
 interface PageProps {
     params: Promise<{ slug: string }>;
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+    const { slug } = await params;
+    const route = routes.find((r) => r.slug === slug);
+
+    if (!route) {
+        return {
+            title: "Ruta no encontrada | BiciVueltaCuba",
+        };
+    }
+
+    return {
+        title: `${route.title} - Rutas en ${route.municipality} | BiciVueltaCuba`,
+        description: route.shortDescription,
+        openGraph: {
+            title: route.title,
+            description: route.description,
+            images: route.images.length > 0 ? [route.images[0]] : [],
+        },
+    };
 }
 
 export default async function RouteDetailPage({ params }: PageProps) {
