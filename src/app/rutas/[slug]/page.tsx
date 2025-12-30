@@ -128,8 +128,17 @@ export default async function RouteDetailPage({ params }: PageProps) {
                             </ul>
 
                             <div className="mt-8 space-y-3">
-                                <Button className="w-full">Descargar GPX</Button>
-                                <Button variant="outline" className="w-full">Compartir Ruta</Button>
+                                <a
+                                    href={`https://wa.me/5300000000?text=Hola, estoy interesado en la ruta: ${route.title}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="block w-full"
+                                >
+                                    <Button className="w-full bg-green-600 hover:bg-green-700 text-white border-none">
+                                        Reserva esta Ruta en WhatsApp
+                                    </Button>
+                                </a>
+                                <Button variant="outline" className="w-full">Descargar Guía PDF</Button>
                             </div>
                         </div>
                     </div>
