@@ -1,44 +1,43 @@
 'use client';
 
-import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 
 interface FilterBarProps {
+    query: string;
+    difficulty: string;
     onSearch: (query: string) => void;
     onFilterChange: (filters: { difficulty?: string; type?: string }) => void;
+    onClear: () => void;
 }
 
-export const FilterBar: React.FC<FilterBarProps> = ({ onSearch, onFilterChange }) => {
-    const [query, setQuery] = useState('');
-    const [difficulty, setDifficulty] = useState<string>('');
-
+export const FilterBar: React.FC<FilterBarProps> = ({ query, difficulty, onSearch, onFilterChange, onClear }) => {
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const val = e.target.value;
-        setQuery(val);
-        onSearch(val);
+        onSearch(e.target.value);
     };
 
     const handleDifficultyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const val = e.target.value;
-        setDifficulty(val);
-        onFilterChange({ difficulty: val });
+        onFilterChange({ difficulty: e.target.value });
     };
 
     return (
-        <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 mb-8">
-            <div className="flex flex-col md:flex-row gap-4">
+        <div className="mb-8 rounded-2xl border border-[#e7e8df] bg-white p-4 sm:p-5">
+            <div className="flex flex-col gap-3 md:flex-row">
                 <div className="flex-1">
+                    <label htmlFor="route-search" className="mb-2 block text-xs font-semibold text-[#48564e]">Busca por ruta o experiencia</label>
                     <input
-                        type="text"
-                        placeholder="Buscar rutas..."
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                        id="route-search"
+                        type="search"
+                        placeholder="Ej. playa, Cojímar..."
+                        className="min-h-12 w-full rounded-xl border border-[#dce2d8] bg-[#fafbf8] px-4 text-sm text-[#202b25] placeholder:text-[#65736b] focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                         value={query}
                         onChange={handleSearch}
                     />
                 </div>
-                <div className="flex gap-4">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
+                    <label htmlFor="route-difficulty" className="text-xs font-semibold text-[#48564e] sm:sr-only">Dificultad</label>
                     <select
-                        className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-white"
+                        id="route-difficulty"
+                        className="min-h-12 min-w-52 rounded-xl border border-[#dce2d8] bg-[#fafbf8] px-4 text-sm text-[#33483b] focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                         value={difficulty}
                         onChange={handleDifficultyChange}
                     >
@@ -48,8 +47,8 @@ export const FilterBar: React.FC<FilterBarProps> = ({ onSearch, onFilterChange }
                         <option value="Difícil">Difícil</option>
                     </select>
 
-                    <Button onClick={() => { setQuery(''); setDifficulty(''); onSearch(''); onFilterChange({ difficulty: '' }); }} variant="ghost">
-                        Limpiar
+                    <Button className="w-full sm:w-auto" onClick={onClear} variant="ghost">
+                        Limpiar filtros
                     </Button>
                 </div>
             </div>

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { RouteCard } from "@/components/routes/RouteCard";
+import { RouteArtwork } from "@/components/routes/RouteArtwork";
 import { provinces, routes } from "@/lib/data";
 
 interface PageProps {
@@ -22,7 +23,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
     return {
         title: `Ciclismo en ${provinceData.name} | BiciVueltaCuba`,
-        description: `Descubre las mejores rutas de ciclismo y turismo en ${provinceData.name}. ${provinceData.description}`,
+        description: `Explora rutas de ciclismo en ${provinceData.name}. ${provinceData.description}`,
     };
 }
 
@@ -42,41 +43,40 @@ export default async function ProvincePage({ params }: PageProps) {
             <Navbar />
 
             <main className="flex-1">
-                <div className="bg-primary/10 py-16">
-                    <div className="container mx-auto px-4 text-center">
-                        <h1 className="text-4xl font-bold text-gray-900 mb-4">{provinceData.name}</h1>
-                        <p className="text-xl text-gray-700 max-w-2xl mx-auto">{provinceData.description}</p>
+                <div className="relative isolate overflow-hidden bg-[#173d30] py-16 text-white sm:py-20">
+                    <div aria-hidden="true" className="absolute inset-0 -z-10 opacity-35">
+                        <RouteArtwork className="h-full w-full" />
+                    </div>
+                    <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+                        <p className="mb-3 text-xs font-bold uppercase tracking-[0.17em] text-white/70">Destino</p>
+                        <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">{provinceData.name}</h1>
+                        <p className="mt-4 max-w-2xl text-base leading-7 text-white/80">{provinceData.description}</p>
                     </div>
                 </div>
 
-                <div className="container mx-auto px-4 py-12">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-6">Municipios</h2>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-16">
+                <div className="mx-auto w-full max-w-7xl flex-1 px-5 py-10 sm:px-8 sm:py-14 lg:px-10">
+                    <h2 className="mb-6 text-2xl font-bold tracking-tight text-[#202b25]">Explora sus municipios</h2>
+                    <div className="mb-14 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
                         {provinceData.municipalities.map(muni => (
-                            <Link key={muni.id} href={`/provincias/${provinceSlug}/${muni.slug}`}>
-                                <div className="group cursor-pointer">
-                                    <div className="aspect-video bg-gray-200 rounded-lg mb-3 overflow-hidden relative">
-                                        <div className="absolute inset-0 flex items-center justify-center text-gray-400">
-                                            Imagen {muni.name}
-                                        </div>
-                                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
-                                    </div>
-                                    <h3 className="text-lg font-bold text-gray-900 group-hover:text-primary transition-colors">{muni.name}</h3>
-                                    <p className="text-sm text-gray-600">{muni.description}</p>
+                            <Link key={muni.id} href={`/provincias/${provinceSlug}/${muni.slug}`} className="group overflow-hidden rounded-2xl border border-[#e7e8df] bg-white transition hover:-translate-y-1 hover:shadow-[0_16px_40px_-24px_rgba(27,61,46,.42)]">
+                                <RouteArtwork className="aspect-[1.7] w-full transition-transform duration-500 group-hover:scale-[1.02]" />
+                                <div className="p-5">
+                                    <h3 className="text-lg font-bold text-[#202b25] group-hover:text-primary">{muni.name}</h3>
+                                    <p className="mt-2 text-sm leading-6 text-[#65736b]">{muni.description}</p>
                                 </div>
                             </Link>
                         ))}
                     </div>
 
-                    <h2 className="text-2xl font-bold text-gray-900 mb-6">Rutas en {provinceData.name}</h2>
+                    <h2 className="mb-6 text-2xl font-bold tracking-tight text-[#202b25]">Rutas en {provinceData.name}</h2>
                     {provinceRoutes.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
                             {provinceRoutes.map((route) => (
                                 <RouteCard key={route.id} route={route} />
                             ))}
                         </div>
                     ) : (
-                        <p className="text-gray-500">No hay rutas registradas en esta provincia aún.</p>
+                        <p className="text-[#65736b]">No hay rutas registradas en esta provincia aún.</p>
                     )}
                 </div>
             </main>

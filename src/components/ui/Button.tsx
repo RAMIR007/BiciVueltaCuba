@@ -12,19 +12,19 @@ export const Button: React.FC<ButtonProps> = ({
     className = '',
     ...props
 }) => {
-    const baseStyles = "inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 cursor-pointer";
+    const baseStyles = "inline-flex min-h-11 items-center justify-center rounded-full font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 cursor-pointer";
 
     const variants = {
-        primary: "bg-primary text-white hover:opacity-90 shadow-md",
-        secondary: "bg-secondary text-white hover:opacity-90 shadow-md",
-        outline: "border-2 border-primary text-primary bg-transparent hover:bg-primary/10",
-        ghost: "hover:bg-accent/10 text-foreground"
+        primary: "bg-primary text-white hover:bg-[#125740]",
+        secondary: "bg-secondary text-white hover:bg-[#23887c]",
+        outline: "border border-primary/30 text-primary bg-white hover:bg-primary/5",
+        ghost: "text-foreground hover:bg-black/5"
     };
 
     const sizes = {
-        sm: "h-8 px-3 text-xs",
-        md: "h-10 px-4 py-2",
-        lg: "h-12 px-8 text-lg"
+        sm: "min-h-10 px-4 text-sm",
+        md: "px-5 py-2.5 text-sm",
+        lg: "px-7 py-3 text-base"
     };
 
     return (

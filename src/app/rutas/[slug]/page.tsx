@@ -2,9 +2,8 @@ import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { Button } from "@/components/ui/Button";
-import { Map } from "@/components/ui/Map";
 import { Gallery } from "@/components/ui/Gallery";
+import { RouteArtwork } from "@/components/routes/RouteArtwork";
 import { routes } from "@/lib/data";
 
 interface PageProps {
@@ -24,11 +23,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return {
         title: `${route.title} - Rutas en ${route.municipality} | BiciVueltaCuba`,
         description: route.shortDescription,
-        openGraph: {
-            title: route.title,
-            description: route.description,
-            images: route.images.length > 0 ? [route.images[0]] : [],
-        },
     };
 }
 
@@ -40,108 +34,76 @@ export default async function RouteDetailPage({ params }: PageProps) {
         notFound();
     }
 
-    // Mock coordinates for the map (centered on Havana for now)
-    // In a real app, these would come from the route data
-    const mapCenter: [number, number] = [23.1136, -82.3666];
-    const mapMarkers = [{ position: mapCenter, title: route.title }];
-
     return (
         <div className="min-h-screen flex flex-col">
             <Navbar />
 
             <main className="flex-1">
-                {/* Hero Banner */}
-                <div className="relative h-[400px] bg-gray-900">
-                    <div className="absolute inset-0 bg-black/50 z-10" />
-                    {/* In real app, use Image component with route.mainImage */}
-                    <div className="absolute inset-0 flex items-center justify-center text-white/20 text-4xl font-bold">
-                        Imagen Principal: {route.title}
+                <section className="relative isolate min-h-[420px] overflow-hidden bg-[#173d30] sm:min-h-[470px]">
+                    <div aria-hidden="true" className="absolute inset-0 opacity-70">
+                        <RouteArtwork className="h-full w-full" />
                     </div>
-
-                    <div className="relative z-20 container mx-auto px-4 h-full flex flex-col justify-end pb-12">
-                        <div className="flex gap-2 mb-4">
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#173d30]/95 via-[#173d30]/30 to-transparent" />
+                    <div className="relative mx-auto flex min-h-[420px] max-w-7xl flex-col justify-end px-5 pb-10 pt-20 sm:min-h-[470px] sm:px-8 sm:pb-14 lg:px-10">
+                        <div className="mb-4 flex flex-wrap gap-2">
                             {route.tags.map(tag => (
-                                <span key={tag} className="px-3 py-1 bg-primary/90 text-white text-sm rounded-full backdrop-blur-sm">
+                                <span key={tag} className="rounded-full border border-white/30 bg-white/10 px-3 py-1 text-xs font-medium text-white backdrop-blur-sm">
                                     {tag}
                                 </span>
                             ))}
                         </div>
-                        <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">{route.title}</h1>
-                        <div className="flex flex-wrap gap-6 text-white/90 font-medium">
-                            <span className="flex items-center gap-2">📍 {route.municipality}, {route.province}</span>
-                            <span className="flex items-center gap-2">⏱️ {route.duration}</span>
-                            <span className="flex items-center gap-2">🚴 {route.distance}</span>
-                            <span className="flex items-center gap-2">
-                                📊 Dificultad: <span className={
-                                    route.difficulty === 'Fácil' ? 'text-green-400' :
-                                        route.difficulty === 'Moderada' ? 'text-yellow-400' : 'text-red-400'
-                                }>{route.difficulty}</span>
-                            </span>
+                        <h1 className="mb-5 max-w-4xl text-4xl font-bold tracking-tight text-white sm:text-5xl">{route.title}</h1>
+                        <div className="flex flex-wrap gap-x-6 gap-y-3 text-sm font-medium text-white/90">
+                            <span>{route.municipality}, {route.province}</span>
+                            <span>Duración: {route.duration}</span>
+                            <span>Distancia: {route.distance}</span>
+                            <span>Dificultad: {route.difficulty}</span>
                         </div>
                     </div>
-                </div>
+                </section>
 
-                <div className="container mx-auto px-4 py-12 grid grid-cols-1 lg:grid-cols-3 gap-12">
-                    {/* Main Content */}
-                    <div className="lg:col-span-2 space-y-12">
+                <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-5 py-10 sm:px-8 sm:py-14 lg:grid-cols-[minmax(0,1.8fr)_minmax(280px,0.8fr)] lg:gap-14 lg:px-10">
+                    <div className="space-y-10">
                         <section>
-                            <h2 className="text-2xl font-bold text-gray-900 mb-4">Descripción</h2>
-                            <p className="text-gray-700 leading-relaxed text-lg">
+                            <h2 className="mb-4 text-2xl font-bold tracking-tight text-[#202b25]">Sobre este recorrido</h2>
+                            <p className="text-base leading-8 text-[#59675f]">
                                 {route.description}
                             </p>
                         </section>
 
                         <section>
-                            <h2 className="text-2xl font-bold text-gray-900 mb-4">Galería</h2>
-                            <Gallery images={route.images} title={`Galería de ${route.title}`} />
-                        </section>
-
-                        <section>
-                            <h2 className="text-2xl font-bold text-gray-900 mb-4">Mapa</h2>
-                            <div className="aspect-video bg-gray-100 rounded-lg border border-gray-200 overflow-hidden shadow-sm">
-                                <Map center={mapCenter} markers={mapMarkers as any} />
-                            </div>
+                            <h2 className="mb-4 text-2xl font-bold tracking-tight text-[#202b25]">El recorrido</h2>
+                            <Gallery />
                         </section>
                     </div>
 
-                    {/* Sidebar */}
-                    <div className="space-y-6">
-                        <div className="bg-gray-50 p-6 rounded-xl border border-gray-200 sticky top-24">
-                            <h3 className="text-xl font-bold text-gray-900 mb-4">Detalles Técnicos</h3>
-                            <ul className="space-y-4 text-sm text-gray-700">
-                                <li className="flex justify-between border-b pb-2">
+                    <aside className="space-y-6">
+                        <div className="rounded-2xl border border-[#e7e8df] bg-white p-6 lg:sticky lg:top-24">
+                            <h2 className="mb-5 text-xl font-bold text-[#202b25]">Detalles de la ruta</h2>
+                            <ul className="space-y-4 text-sm text-[#59675f]">
+                                <li className="flex justify-between border-b border-[#e7e8df] pb-3">
                                     <span>Distancia</span>
-                                    <span className="font-semibold">{route.distance}</span>
+                                    <span className="font-semibold text-[#202b25]">{route.distance}</span>
                                 </li>
-                                <li className="flex justify-between border-b pb-2">
-                                    <span>Duración Estimada</span>
-                                    <span className="font-semibold">{route.duration}</span>
+                                <li className="flex justify-between border-b border-[#e7e8df] pb-3">
+                                    <span>Duración estimada</span>
+                                    <span className="font-semibold text-[#202b25]">{route.duration}</span>
                                 </li>
-                                <li className="flex justify-between border-b pb-2">
-                                    <span>Tipo de Terreno</span>
-                                    <span className="font-semibold">Mixto (Asfalto/Tierra)</span>
+                                <li className="flex justify-between border-b border-[#e7e8df] pb-3">
+                                    <span>Dificultad</span>
+                                    <span className="font-semibold text-[#202b25]">{route.difficulty}</span>
                                 </li>
-                                <li className="flex justify-between border-b pb-2">
-                                    <span>Mejor época</span>
-                                    <span className="font-semibold">Todo el año</span>
+                                <li className="flex justify-between pb-1">
+                                    <span>Localidad</span>
+                                    <span className="font-semibold text-[#202b25]">{route.municipality}</span>
                                 </li>
                             </ul>
 
-                            <div className="mt-8 space-y-3">
-                                <a
-                                    href={`https://wa.me/5300000000?text=Hola, estoy interesado en la ruta: ${route.title}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="block w-full"
-                                >
-                                    <Button className="w-full bg-green-600 hover:bg-green-700 text-white border-none">
-                                        Reserva esta Ruta en WhatsApp
-                                    </Button>
-                                </a>
-                                <Button variant="outline" className="w-full">Descargar Guía PDF</Button>
+                            <div className="mt-8">
+                                <p className="text-xs leading-5 text-[#65736b]">Consulta los detalles del recorrido antes de salir y adapta el trayecto a tus condiciones.</p>
                             </div>
                         </div>
-                    </div>
+                    </aside>
                 </div>
             </main>
 
