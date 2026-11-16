@@ -4,9 +4,8 @@ on:
   push:
     branches:
       - maintenance/bici-vuelta-cuba-security
-    paths:
-      - package.json
-      - .github/workflows/bici-ci.yml
+    paths-ignore:
+      - package-lock.json
 
 permissions:
   contents: write
