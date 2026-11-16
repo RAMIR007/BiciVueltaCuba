@@ -6,6 +6,7 @@ on:
       - maintenance/bici-vuelta-cuba-security
     paths:
       - package.json
+      - .github/workflows/bici-ci.yml
 
 permissions:
   contents: write
@@ -19,12 +20,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           persist-credentials: true
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
@@ -44,6 +45,26 @@ jobs:
 
       - name: Install from lockfile
         run: npm ci
+
+      - name: Summarize dependency vulnerabilities
+        run: |
+          npm audit --json > /tmp/npm-audit.json || true
+          node <<'NODE'
+          const audit = require('/tmp/npm-audit.json');
+          const entries = Object.entries(audit.vulnerabilities || {});
+          console.log('Vulnerable dependency count:', entries.length);
+          for (const [name, item] of entries) {
+            console.log(`- ${name}: ${item.severity}; direct=${item.isDirect}; range=${item.range}`);
+            for (const advisory of item.via || []) {
+              if (typeof advisory === 'object') {
+                console.log(`  advisory: ${advisory.title} | ${advisory.url}`);
+              }
+            }
+            if (item.fixAvailable) {
+              console.log('  fixAvailable:', JSON.stringify(item.fixAvailable));
+            }
+          }
+          NODE
 
       - name: Lint
         run: npm run lint
