@@ -1,0 +1,52 @@
+name: Bici Vuelta Cuba CI
+
+on:
+  push:
+    branches:
+      - maintenance/bici-vuelta-cuba-security
+    paths:
+      - package.json
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bici-vuelta-cuba-security-ci
+  cancel-in-progress: false
+
+jobs:
+  install-and-verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Regenerate package lock
+        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+
+      - name: Commit updated lockfile
+        run: |
+          if ! git diff --quiet -- package-lock.json; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add package-lock.json
+            git commit -m "chore: regenerate npm lockfile"
+            git push
+          fi
+
+      - name: Install from lockfile
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Production build
+        run: npm run build
