@@ -1,0 +1,43 @@
+name: Bici Vuelta Cuba CI
+
+on:
+  push:
+    branches:
+      - maintenance/bici-vuelta-cuba-security
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bici-vuelta-cuba-security-ci
+  cancel-in-progress: false
+
+jobs:
+  install-and-verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install from lockfile
+        run: npm ci
+
+      - name: Audit dependencies
+        run: npm audit --audit-level=low
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Production build
+        run: npm run build
